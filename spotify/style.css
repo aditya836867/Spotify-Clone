@@ -1,0 +1,31 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+.nav{
+    width: 100vw;
+    height: 65px;
+    background-color: black;
+    display: flex;
+    align-items: center;
+}
+.logo{
+    transform: translateY(2px);
+    padding-left: 28px;
+}
+.left{
+    display:flex;
+    align-items: center;
+    justify-content: center;
+}   
+.right{
+    display:flex;
+}
+.home{
+    margin-top: 4px;
+    margin-left: 35px;
+    border: 1px solid white;
+    padding: 5px;
+    border-radius: 100%;
+}
