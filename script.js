@@ -137,9 +137,37 @@ next.addEventListener("click",function(){
     }
 })
 
+let prevTimerCounter = 0;
+let prevTimer;
+
+function refreshCounter() {
+    clearTimeout(prevTimer);
+    prevTimer = setTimeout(() => {
+        prevTimerCounter = 0;
+    }, 5000);
+}
+
 let previous = document.getElementsByClassName("previous")[0];
-previous.addEventListener("click",function(){
-    if 
-})
+previous.addEventListener("click", function() {
+    if (recent.length === 0 || recent[recent.length - 1] === 0) {
+        if (currentAudio) {
+            currentAudio.pause();
+        }
+        currentAudio = new Audio(newAnchor[songs.length - 1].href);
+        currentAudio.play();
+        recent.push(songs.length - 1);
+        songPLay = 1;
+        togglePlayPause(songPLay);
+        currentSongListColorChanger(songs.length - 1);
+    } else {
+        currentAudio.pause();
+        let prevIndex = recent[recent.length - 1] - 1;
+        currentAudio = new Audio(newAnchor[prevIndex].href);
+        currentAudio.play();
+        recent.push(prevIndex);
+        songPLay = 1;
+        togglePlayPause(songPLay);
+        currentSongListColorChanger(prevIndex);
+    }})
 
 getSongsIntoLibrary("http://127.0.0.1:3000/spotify/songs/")
