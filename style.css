@@ -1,0 +1,460 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; /* Include padding and border in the element's total width */
+    font-family: sans-serif;
+}
+
+body {
+    overflow-y: hidden;
+}
+
+.nav {
+    width: 100vw;
+    height: 65px;
+    background-color: black;
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Ensure space between left and right sections */
+}
+
+.logo {
+    transform: translateY(2px);
+    padding-left: 28px;
+    fill: white;
+}
+
+.left {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.right {
+    display: flex;
+    margin-right: 10vw;
+}
+
+.home {
+    margin-left: 28px;
+    padding: 12px;
+    border-radius: 50%;
+    background-color: #1f1f1f;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    animation: all ease 0.3s;
+    fill: white;
+}
+
+.home:hover {
+    transform: scale(1.04);
+    background-color: #252525;
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    background-color: #222;
+    border-radius: 50px;
+    padding: 6px 15px;
+    width: 60vw;
+    max-width: 400px;
+    margin-left: 10px;
+    border: 2px solid transparent;
+    box-sizing: border-box;
+    transition: border ease-in-out 0.5s;
+}
+
+.search-bar:hover {
+    background-color: #292929;
+    border: 2px solid rgb(66, 66, 66);
+}
+
+.search-bar:focus-within {
+    border: 2px solid white;
+}
+
+.search-bar input {
+    border: none;
+    outline: none;
+    background: transparent;
+    padding: 6px;
+    color: white;
+    font-size: 16px;
+    width: 100%;
+}
+
+.search-bar input::placeholder {
+    color: rgb(159, 159, 159);
+}
+
+.searchIco {
+    margin-right: 10px;
+    cursor: pointer;
+    fill: rgb(188, 179, 179);
+}
+
+.searchIco:hover {
+    fill: white;
+}
+
+.explore {
+    margin-left: 10px;
+    padding: 8px 15px;
+    border-radius: 25px;
+    background-color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    animation: all ease 0.3s;
+    font-weight: 800;
+    font-size: 13px;
+    transition: transform ease 0.2s;
+    min-width: 122px;
+}
+
+.explore:hover {
+    transform: scale(1.04);
+    color: #222222;
+    background-color: #f7ffe2;
+}
+
+.install span {
+    margin-left: 10px;
+}
+
+.install {
+    background-color: transparent;
+    color: rgb(151, 151, 151);
+    font-weight: 600;
+    transition: all ease 0.2s;
+    padding: 0px;
+    fill: rgb(173, 173, 173);
+}
+
+.install:hover {
+    color: #c3c3c3;
+    background-color: rgb(40, 40, 40);
+    fill: white;
+}
+
+.notification {
+    cursor: pointer;
+    margin-left: 25px;
+    transition: all ease 0.5s;
+    padding: 10px;
+    border-radius: 50px;
+    box-sizing: border-box;
+    fill: rgb(215, 214, 214);
+    height: 40px;
+    width: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.notification:hover {
+    transform: scale(1.04);
+    background-color: #292929;
+    fill: white;
+}
+
+.main {
+    display: flex;
+    background-color: #000000;
+    height: 100vh;
+    justify-content: center;
+    gap: 4px 8px;
+    overflow-x: hidden; /* Hide horizontal overflow */
+}
+
+.library {
+    width: 26vw;
+    height: 80vh;
+    background-color: #121212;
+    border-radius: 12px;
+    min-width: 285px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.content {
+    width: 70vw;
+    height: 80vh;
+    border-radius: 12px;
+    background-color: #121212;
+}
+
+.mainHeading {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    gap: 10px;
+    align-items: center;
+}
+
+.mainHeadingLeft {
+    display: flex;
+    font-weight: 700;
+    color: rgb(200, 200, 200);
+    gap: 8px;
+    align-items: center;
+    fill: rgb(200, 200, 200);
+    font-size: 15px;
+    transition: all ease 0.4s;
+    cursor: pointer;
+}
+
+.mainHeadingRight {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    fill: rgb(200, 200, 200);
+    font-size: 15px;
+}
+
+.mainHeadingLeft:hover {
+    color: white;
+    fill: white;
+}
+
+.createPlaylist,
+.showMore {
+    height: 30px;
+    width: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 25px;
+    cursor: pointer;
+}
+
+.createPlaylist:hover {
+    fill: white;
+    transition: all ease 0.4s;
+    background-color: #292929;
+}
+
+.showMore:hover {
+    fill: white;
+    transition: all ease 0.4s;
+    background-color: #292929;
+}
+
+.button {
+    color: white;
+    padding: 6px 12px;
+    border-radius: 25px;
+    background-color: #2a2a2a;
+    margin-left: 5px;
+    cursor: pointer;
+}
+
+.button:hover {
+    background-color: #494949;
+    transition: all ease 0.4s;
+}
+
+.filter {
+    display: flex;
+    font-size: 15px;
+    align-items: center;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.recent {
+    color: #9c9c9c;
+    fill: #9c9c9c;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all ease 0.2s;
+}
+
+.recent:hover {
+    color: white;
+    fill: white;
+    scale: 1.04;
+}
+
+.libSearch {
+    fill: #9c9c9c;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 20px;
+}
+
+.libSearch:hover {
+    background-color: #292929;
+}
+
+.libTools {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    gap: 10px;
+    align-items: center;
+}
+
+.list {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    padding: 10px;
+    margin: 5px;
+    overflow-y: auto;
+    height: auto;
+    cursor: pointer;
+}
+
+.list:hover {
+    background-color: #292929;
+    transition: all ease 0.4s;
+    border-radius: 10px;
+}
+
+.libContent {
+    transform: translateY(-10px);
+    flex-grow: 1;
+    overflow-y: auto;
+    height: auto;
+    color: white;
+}
+
+.libContent::-webkit-scrollbar {
+    width: 12px;
+}
+
+.libContent::-webkit-scrollbar-thumb {
+    background-color: #444;
+    border-radius: 10px;
+}
+
+.libContent::-webkit-scrollbar-track {
+    background-color: #222;
+}
+
+.listImg img {
+    width: 50px;
+    height: 50px;
+    border-radius: 3px;
+    object-fit: cover;
+}
+
+.author {
+    color: #adadad;
+    font-size: 13px;
+    margin-top: 3px;
+    font-weight: 500;
+}
+
+.listData {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.listName {
+    font-family: poppins;
+    font-size: 15px;
+    font-weight: 600;
+    color: white;
+    margin-top: 3px;
+}
+
+.author span {
+    font-family: poppins;
+}
+.group{
+    margin-left: 45px;
+}
+
+.groupName{
+    color: white;
+    font-size: 25px;
+    font-weight: 700;
+    display: block;
+    margin-top: 25px;
+    margin-bottom: 15px;
+    margin-left: 5px;
+    cursor: pointer;
+}
+.groupName:hover{
+    text-decoration: underline;
+}
+
+.card img{
+    height: 160px;
+    width: 160px;
+    box-sizing: border-box;
+    border-radius: 5px;
+}
+.card{
+    padding: 5px;
+    box-sizing:border-box;
+    width: 180px;
+    height: 240px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 10px;
+    border-radius: 5px;
+    transition: all ease 0.4s;  
+    cursor: pointer;
+}
+
+.cardArtist {
+    color: rgb(202, 202, 202);
+    font-size: 14px;
+    font-weight: 500;
+    overflow: hidden; /* Hide the overflow text */
+    text-overflow: ellipsis; /* Display ellipsis (...) for overflow text */
+    display: -webkit-box; /* Use a flexbox-based layout */
+    -webkit-line-clamp: 2; /* Limit the text to 3 lines */
+    line-clamp: 2; /* Standard property for compatibility */
+    -webkit-box-orient: vertical; /* Set the box orientation to vertical */
+    white-space: normal; /* Allow the text to wrap */
+}
+
+.card:hover {
+    background-color: #292929;
+}
+
+.cardsPanel{
+    display: grid;
+    grid-template-columns: repeat(5,1fr);
+    grid-template-rows: auto;
+}
+.group{
+    box-sizing: border-box;
+
+}
+
+.content{
+    box-sizing: border-box;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.content::-webkit-scrollbar{
+    width: 12px;
+}
+
+.content::-webkit-scrollbar-thumb {
+    background-color: #444;
+    border-radius: 10px;
+}
+
+.content::-webkit-scrollbar-track {
+    background-color: #222;
+    border-radius: 5px;
+}
