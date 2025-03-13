@@ -170,4 +170,4 @@ previous.addEventListener("click", function() {
         currentSongListColorChanger(prevIndex);
     }})
 
-getSongsIntoLibrary("http://127.0.0.1:3000/spotify/songs/")
+getSongsIntoLibrary("./songs/")
