@@ -1,126 +1,274 @@
-const SUPABASE_URL = "https://ridweeccaeasoqjjjminy.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJpZHdlZWNhZWFzb3FqamptaW55Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE4ODEyNjksImV4cCI6MjA1NzQ1NzI2OX0.78-DPPAEvlg4X_LQFs-AxqMRjycbhIISazwlT-QoABU";
-const BUCKET_NAME = "my-files";
-
-// Initialize Supabase client
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
+let listImgSrc = "https://imgs.search.brave.com/XrvFKD0jnlh0jz8IpF7JngRez93fNebVbu5IOmKTf4Y/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jbXMt/ZnltLnMzLm5sLWFt/cy5zY3cuY2xvdWQv/YjdfVDFpOV9YYl9S/Y19DNXMwM2xfVnNf/UzlfM2FjNzI2OGEx/YS5wbmc"
 let currentAudio = null;
 let songs = [];
-let songURLs = [];
+let newAnchor = [];
 let recent = [];
 let songPLay = 0;
 
-// Function to fetch songs from Supabase Storage
-async function getSongsIntoLibrary() {
-    let { data, error } = await supabase.storage.from(BUCKET_NAME).list();
-    if (error) {
-        console.error("Error fetching songs:", error);
-        return;
-    }
+// setting default progress of the seekbar to be zero
+document.getElementById("seekBar").style.setProperty("--progress", `${0}%`);
 
-    for (let file of data) {
-        if (file.name.endsWith(".mp3")) {
-            let songURL = `${SUPABASE_URL}/storage/v1/object/public/${BUCKET_NAME}/${file.name}`;
-            let songName = file.name.replace(".mp3", "").replaceAll("%20", " ").replaceAll("%E2%80%99", "'");
-            
-            songs.push(songName);
-            songURLs.push(songURL);
-            createList(songName);
+function formatTime(currentTime) {
+    let minutes = Math.floor(currentTime / 60);
+    let seconds = Math.floor(currentTime % 60);
+    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+}
+
+function createList(listName, Author = "Untitled", image = listImgSrc) {
+    let library = document.getElementById("libContent");
+    library.innerHTML +=
+    `
+    <div class="list">
+    <div class="listImg"><img src="${image}" alt=""></div>
+    <div class="listData">
+        <div class="listName">${listName}</div>
+        <div class="author">
+            <span>Artist • </span>
+            <span class="author">${Author}</span>
+        </div>
+    </div>
+    </div>
+    `
+
+}
+
+function timeStampUpdater(audio){
+    let duration = document.getElementById("endTime");
+    let currentTime = document.getElementById("currentTime");
+    audio.addEventListener("timeupdate", function(){
+        duration.innerHTML = `${formatTime(audio.duration)}`;
+    })
+    audio.addEventListener("timeupdate", function(){
+        currentTime.innerHTML = `${formatTime(audio.currentTime)}`;
+    })
+}
+
+function createNameCard(songName,imgSrc = listImgSrc){
+    let nameBox = document.getElementsByClassName("nameBox")[0];
+    nameBox.innerHTML = songName;
+    let frontImage = document.getElementsByClassName("frontImage")[0].children[0];
+    frontImage.src = imgSrc;
+}
+
+function seekBarUpdate(audio) {
+    const seekBar = document.getElementById("seekBar");
+
+    // Update seek bar max value when metadata is loaded
+    audio.addEventListener("loadedmetadata", () => {
+        seekBar.max = audio.duration;
+    });
+
+    // Update seek bar value and CSS variable as the audio plays
+    const timeUpdateListener = () => {
+        seekBar.value = audio.currentTime;
+        const progress = (audio.currentTime / audio.duration) * 100;
+        seekBar.style.setProperty("--progress", `${progress}%`);
+    };
+    audio.addEventListener("timeupdate", timeUpdateListener);
+
+    // Seek when user interacts with the seek bar
+    const inputListener = () => {
+        const seekTime = seekBar.value;
+        audio.currentTime = seekTime;
+    };
+    seekBar.addEventListener("input", inputListener);
+
+    // Cleanup listeners when audio is paused or replaced
+    audio.addEventListener("pause", () => {
+        audio.removeEventListener("timeupdate", timeUpdateListener);
+        seekBar.removeEventListener("input", inputListener);
+    });
+}
+
+function togglePlayPause(num){
+    if(num === 0){
+        document.querySelector(".playButton").setAttribute("hidden", "true");
+        document.querySelector(".pauseButton").removeAttribute("hidden");
+    }
+    else if(num === 1){
+        document.querySelector(".pauseButton").setAttribute("hidden", "true");
+        document.querySelector(".playButton").removeAttribute("hidden");
+    }
+}
+
+function currentSongListColorChanger(num){
+    if(recent.length > 1){
+        document.getElementsByClassName("libContent")[0].children[recent[recent.length - 2]].querySelector(".listName").style.color = "white";
+    }
+    document.getElementsByClassName("libContent")[0].children[num].querySelector(".listName").style.color = "#1cbf56";
+}
+
+togglePlayPause(songPLay); // To initialize the the play Pause Button Once
+
+async function getSongsIntoLibrary(folder) {
+    let a = await fetch(folder);
+    let res = await a.text();
+    let div = document.createElement('div');
+    div.innerHTML = res;
+    let anchors = div.getElementsByTagName("a");
+
+    for (let i = 0; i < anchors.length; i++) {
+        let a = anchors[i];
+        if (a.href.endsWith(".mp3")) {
+            let songName = a.href.split('/').pop().replace(".mp3", "").replaceAll("%20", " ").replaceAll("%E2%80%99", "'");
+            songs.push(songName); // Push Song name to The songs
+            newAnchor.push(a);  // Push Useful anchor to newAnchor
+            createList(songName); // Create List in Library
         }
     }
 
-    attachEventListeners();
-}
+    for(let i = 0; i < songs.length; i++) {
+        let listItem = document.getElementById("libContent").children[i];
+        listItem.addEventListener("click", function(){
+            if (currentAudio){
+                currentAudio.pause();
+                songPLay = 0;
+                togglePlayPause(songPLay);
+                seekBarUpdate(currentAudio);
+                timeStampUpdater(currentAudio);
+            }
+            if (currentAudio && currentAudio.src === newAnchor[i].href) {
+                currentAudio = null;
+                songPLay = 0;
+                togglePlayPause(songPLay);
+                seekBarUpdate(currentAudio);
+                timeStampUpdater(currentAudio);
+            }
+            else{
+                currentAudio = new Audio(newAnchor[i].href);
+                currentAudio.play();
+                recent.push(i);  // Push the index of the song to recent
+                songPLay = 1;
+                togglePlayPause(songPLay);
+                currentSongListColorChanger(i);
+                createNameCard(songs[i])
+                seekBarUpdate(currentAudio);
+                timeStampUpdater(currentAudio);
+            }
 
-// Function to create song list UI
-function createList(songName) {
-    let library = document.getElementById("libContent");
-    library.innerHTML += `
-        <div class="list">
-            <div class="listImg"><img src="https://imgs.search.brave.com/XrvFKD0jnlh0jz8IpF7JngRez93fNebVbu5IOmKTf4Y/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jbXMt/ZnltLnMzLm5sLWFt/cy5zY3cuY2xvdWQv/YjdfVDFpOV9YYl9S/Y19DNXMwM2xfVnNf/UzlfM2FjNzI2OGEx/YS5wbmc" alt=""></div>
-            <div class="listData">
-                <div class="listName">${songName}</div>
-            </div>
-        </div>`;
-}
-
-// Function to attach click listeners to songs
-function attachEventListeners() {
-    let listItems = document.getElementsByClassName("list");
-    for (let i = 0; i < listItems.length; i++) {
-        listItems[i].addEventListener("click", function () {
-            playSong(i);
         });
     }
+
 }
 
-// Play or pause a song
-function playSong(index) {
-    if (currentAudio) {
-        currentAudio.pause();
-        songPLay = 0;
-        togglePlayPause(songPLay);
-    }
-
-    if (currentAudio && currentAudio.src === songURLs[index]) {
-        currentAudio = null;
-        songPLay = 0;
-        togglePlayPause(songPLay);
-    } else {
-        currentAudio = new Audio(songURLs[index]);
+let playBox = document.getElementsByClassName("play")[0];
+playBox.addEventListener("click",function(){
+    if((songPLay === 0) && currentAudio) {
         currentAudio.play();
-        recent.push(index);
-        songPLay = 1;
+        songPLay =1;
         togglePlayPause(songPLay);
-        currentSongListColorChanger(index);
+        createNameCard(songs[0])
+        seekBarUpdate(currentAudio);
+        timeStampUpdater(currentAudio);
     }
-}
-
-// Update play/pause button UI
-function togglePlayPause(num) {
-    document.querySelector(".playButton").hidden = num === 0;
-    document.querySelector(".pauseButton").hidden = num === 1;
-}
-
-// Highlight the currently playing song
-function currentSongListColorChanger(index) {
-    if (recent.length > 1) {
-        document.getElementsByClassName("listName")[recent[recent.length - 2]].style.color = "white";
-    }
-    document.getElementsByClassName("listName")[index].style.color = "#1cbf56";
-}
-
-// Event listeners for Play, Next, and Previous buttons
-document.querySelector(".play").addEventListener("click", function () {
-    if (songPLay === 0 && currentAudio) {
+    else if(songPLay === 0 && !currentAudio ){
+        currentAudio = new Audio(newAnchor[0].href);
         currentAudio.play();
         songPLay = 1;
         togglePlayPause(songPLay);
-    } else if (songPLay === 0 && !currentAudio && songURLs.length > 0) {
-        playSong(0);
-    } else if (songPLay === 1) {
+        recent.push(0);
+        currentSongListColorChanger(0);
+        createNameCard(songs[0])
+        seekBarUpdate(currentAudio);
+        timeStampUpdater(currentAudio);
+    }
+    else if(songPLay ===1){
         currentAudio.pause();
-        songPLay = 0;
+        songPLay =0;
         togglePlayPause(songPLay);
-    }
-});
+        seekBarUpdate(currentAudio);
+        timeStampUpdater(currentAudio);
 
-document.querySelector(".next").addEventListener("click", function () {
-    if (recent.length === 0 || recent[recent.length - 1] === songs.length - 1) {
-        playSong(0);
-    } else {
-        playSong(recent[recent.length - 1] + 1);
     }
-});
+} )
 
-document.querySelector(".previous").addEventListener("click", function () {
+let next = document.getElementsByClassName("next")[0];
+next.addEventListener("click",function(){
+    if(recent.length === 0 || recent[recent.length -1] === songs.length-1){
+        if (currentAudio) {
+            currentAudio.pause();
+        }
+        currentAudio = new Audio(newAnchor[0].href);
+        currentAudio.play();
+        recent.push(0);
+        songPLay = 1;
+        togglePlayPause(songPLay);
+        currentSongListColorChanger(0);
+        createNameCard(songs[0])
+        seekBarUpdate(currentAudio);
+        timeStampUpdater(currentAudio);
+    }
+    else{
+        currentAudio.pause();
+        let nextIndex = recent[recent.length - 1] + 1;
+        currentAudio = new Audio(newAnchor[nextIndex].href);
+        currentAudio.play();
+        recent.push(nextIndex);
+        songPLay = 1;
+        togglePlayPause(songPLay);
+        currentSongListColorChanger(nextIndex);
+        createNameCard(songs[nextIndex])
+        seekBarUpdate(currentAudio);
+        timeStampUpdater(currentAudio);
+    }
+})
+
+let previous = document.getElementsByClassName("previous")[0];
+previous.addEventListener("click", function() {
     if (recent.length === 0 || recent[recent.length - 1] === 0) {
-        playSong(songs.length - 1);
+        if (currentAudio) {
+            currentAudio.pause();
+        }
+        currentAudio = new Audio(newAnchor[songs.length - 1].href);
+        currentAudio.play();
+        recent.push(songs.length - 1);
+        songPLay = 1;
+        togglePlayPause(songPLay);
+        currentSongListColorChanger(songs.length - 1);
+        createNameCard(songs[songs.length - 1])
+        seekBarUpdate(currentAudio);
+        timeStampUpdater(currentAudio);
     } else {
-        playSong(recent[recent.length - 1] - 1);
-    }
-});
+        currentAudio.pause();
+        let prevIndex = recent[recent.length - 1] - 1;
+        currentAudio = new Audio(newAnchor[prevIndex].href);
+        currentAudio.play();
+        recent.push(prevIndex);
+        songPLay = 1;
+        togglePlayPause(songPLay);
+        currentSongListColorChanger(prevIndex);
+        createNameCard(songs[prevIndex])
+        seekBarUpdate(currentAudio);
+        timeStampUpdater(currentAudio);
+    }})
 
-// Initialize the song list
-getSongsIntoLibrary();
+//   Defining the event listener to the namecard
+let nameCard = document.getElementsByClassName("nameCard")[0];
+    nameCard.addEventListener("click",function() {
+        if(currentAudio){
+            if(songPLay === 0){
+                currentAudio.play();
+                songPLay =1;
+                togglePlayPause(songPLay);
+            }
+            else if(songPLay ===1){
+                currentAudio.play();
+                songPLay =0;
+                togglePlayPause(songPLay);
+                seekBarUpdate(currentAudio);
+                timeStampUpdater(currentAudio);
+            }
+        }
+        else{
+            currentAudio = new Audio(newAnchor[0].href);
+            currentAudio.play();
+            songPLay = 1;
+            togglePlayPause(songPLay);
+            createNameCard(songs[0])
+            currentSongListColorChanger(0);
+            seekBarUpdate(currentAudio);
+            timeStampUpdater(currentAudio);
+        }
+    })
+    
+getSongsIntoLibrary("http://127.0.0.1:3000/spotify/songs/");
